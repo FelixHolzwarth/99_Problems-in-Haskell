@@ -27,7 +27,7 @@ myButLast' (_:xs)         = myButLast' xs
 --find the k'th element of a list. The first element of a list is number 1
 elementAt :: Int -> [a] -> Maybe a
 elementAt 0 _ = Nothing
-elementAt index [] = Nothing
+elementAt _ [] = Nothing
 elementAt index lst = case drop (index - 1) lst of
                         []        -> Nothing
                         otherwise -> Just $ head $ drop (index - 1) lst
@@ -44,6 +44,9 @@ myLength :: [a] ->  Int
 myLength []     = 0
 myLength (_:xs) = 1 + myLength xs
 
+myLength' :: [a] -> Int
+myLength' = foldl (\acc _ -> acc + 1) 0
+
 
 --reverse a list
 myReverse :: [a] -> [a]
@@ -54,7 +57,71 @@ myReverse lst = reverse' lst []
       reverse' [] acc     = acc
 
 myReverse' :: [a] -> [a]
-myReverse' lst = foldl (\x xs -> xs:x) [] lst
+myReverse' lst = foldl (\acc x -> x:acc) [] lst
 
 myReverse'' :: [a] -> [a]
-myReverse'' lst = foldr (\x xs -> xs ++ [x]) [] lst
+myReverse'' lst = foldr (\x acc -> acc ++ [x]) [] lst
+
+
+-- find out wether a list is a palindrom. A Palindrom can be read forward and backward
+isPalindrom :: (Eq a) => [a] -> Bool
+isPalindrom lst = isPalindrom' lst (reverse lst)
+  where
+    isPalindrom' [] _            = True
+    isPalindrom' _ []            = True
+    isPalindrom' (x:xs) (y:ys)   = x == y && isPalindrom' xs ys
+
+isPalindrom' :: (Eq a) => [a] -> Bool
+isPalindrom' lst = lst == (reverse lst)
+
+-- new Data-Type for NestedList
+data NestedList a = Elem a | List [NestedList a]
+  deriving Show
+
+flatten :: NestedList a -> [a]
+flatten (List [])            = []
+flatten (Elem a)             = [a]
+flatten (List ((Elem a):xs)) = a:flatten (List xs)
+flatten (List (as@(List _):xs)) = (flatten as) ++ flatten (List xs)
+
+
+--eliminate consecutive duplicates of list elements
+compress :: (Eq a) => [a] -> [a]
+compress []           = []
+compress [x]          = [x]
+compress (y:ys)       = reverse $ compressHelper ys [y]
+  where
+      compressHelper (x:xs) acc = if x /= head acc
+                                then compressHelper xs (x:acc)
+                                else compressHelper xs acc
+      compressHelper [] acc     = acc
+
+compress' :: (Eq a) => [a] -> [a]
+compress' []        = []
+compress' [x]       = [x]
+compress' (x:xs)    = x:compress (dropWhile (== x) xs)
+
+
+-- pack consecutive duplicates of list elements into sublists.
+pack :: (Eq a) => [a] -> [[a]]
+pack x = zipWith replicate nums elems
+  where
+    nums  = map snd $ countConsecutiveElems x
+    elems = map fst $ countConsecutiveElems x
+
+countConsecutiveElems :: (Eq a) => [a] -> [(a,Int)]
+countConsecutiveElems []      = []
+countConsecutiveElems [z]     = [(z,1)]
+countConsecutiveElems (z:zs)  = reverse $ helper zs [(z,1)]
+  where
+    helper []     acc         = acc
+    helper (x:_) acc@(y:ys)  = if x == (fst y)
+                            then modify y:ys
+                            else (x,1):acc
+    modify ::(a,Int) -> (a,Int)
+    modify = (\(e,num) -> (e,num + 1))
+
+
+encode :: (Eq a) =>  [a] -> [(Int,a)]
+encode []         = []
+encode lst@(_:_)  = map (\x -> (length x,head x)) $ pack $ lst
