@@ -1,4 +1,4 @@
--- find last element of a list
+-- p01 find last element of a list
 myLast :: [a] -> Maybe a
 myLast [] = Nothing
 myLast l@(_:_) = Just lastElem
@@ -10,7 +10,7 @@ myLast' []      = Nothing
 myLast' (x:[])  = Just x
 myLast' (_:xs)  = myLast' xs
 
--- find the last but one element of a list
+-- p02 find the last but one element of a list
 myButLast :: [a] -> Maybe a
 myButLast [] = Nothing
 myButLast (x:_:[]) = Just x
@@ -24,7 +24,7 @@ myButLast' (_:[])     = Nothing
 myButLast' (x:_:[])  = Just x
 myButLast' (_:xs)         = myButLast' xs
 
---find the k'th element of a list. The first element of a list is number 1
+-- p03 find the k'th element of a list. The first element of a list is number 1
 elementAt :: Int -> [a] -> Maybe a
 elementAt 0 _ = Nothing
 elementAt _ [] = Nothing
@@ -39,7 +39,7 @@ elementAt' 1 (x:_)     = Just x
 elementAt' index (_:xs) = elementAt' (index - 1) xs
 
 
---find the number of elements in a list
+-- p04 find the number of elements in a list
 myLength :: [a] ->  Int
 myLength []     = 0
 myLength (_:xs) = 1 + myLength xs
@@ -48,7 +48,7 @@ myLength' :: [a] -> Int
 myLength' = foldl (\acc _ -> acc + 1) 0
 
 
---reverse a list
+-- p05 reverse a list
 myReverse :: [a] -> [a]
 myReverse []          = []
 myReverse lst = reverse' lst []
@@ -63,7 +63,7 @@ myReverse'' :: [a] -> [a]
 myReverse'' lst = foldr (\x acc -> acc ++ [x]) [] lst
 
 
--- find out wether a list is a palindrom. A Palindrom can be read forward and backward
+-- p06 find out wether a list is a palindrom. A Palindrom can be read forward and backward
 isPalindrom :: (Eq a) => [a] -> Bool
 isPalindrom lst = isPalindrom' lst (reverse lst)
   where
@@ -74,7 +74,7 @@ isPalindrom lst = isPalindrom' lst (reverse lst)
 isPalindrom' :: (Eq a) => [a] -> Bool
 isPalindrom' lst = lst == (reverse lst)
 
--- new Data-Type for NestedList
+-- p07 new Data-Type for NestedList
 data NestedList a = Elem a | List [NestedList a]
   deriving Show
 
@@ -85,7 +85,7 @@ flatten (List ((Elem a):xs)) = a:flatten (List xs)
 flatten (List (as@(List _):xs)) = (flatten as) ++ flatten (List xs)
 
 
---eliminate consecutive duplicates of list elements
+-- p08 eliminate consecutive duplicates of list elements
 compress :: (Eq a) => [a] -> [a]
 compress []           = []
 compress [x]          = [x]
@@ -102,7 +102,7 @@ compress' [x]       = [x]
 compress' (x:xs)    = x:compress (dropWhile (== x) xs)
 
 
--- pack consecutive duplicates of list elements into sublists.
+-- p09 pack consecutive duplicates of list elements into sublists.
 pack :: (Eq a) => [a] -> [[a]]
 pack x = zipWith replicate nums elems
   where
@@ -121,7 +121,10 @@ countConsecutiveElems (z:zs)  = reverse $ helper zs [(z,1)]
     modify ::(a,Int) -> (a,Int)
     modify = (\(e,num) -> (e,num + 1))
 
-
+-- p10 Run-length encoding of a list. Use the result of problem P09
+-- to implement the so-called run-length encoding data compression method.
+-- Consecutive duplicates of elements are encoded as lists (N E) where N is
+-- the number of duplicates of the element E.
 encode :: (Eq a) =>  [a] -> [(Int,a)]
 encode []         = []
 encode lst@(_:_)  = map (\x -> (length x,head x)) $ pack $ lst
