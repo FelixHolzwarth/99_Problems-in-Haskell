@@ -63,9 +63,33 @@ drop :: [a] -> Int -> [a]
 drop [] _         = []
 drop lst n  = helper n lst
   where
-    helper 0  (y:ys) = helper n ys
+    helper 0  (_:ys) = helper n ys
     helper n2 lst    = helper (n2 - 1) lst
 
 drop' :: [a] -> Int -> [a]
 drop' [] _        = []
 drop' lst n = map fst $ filter ((== 0) . (`mod` n)  . snd) $ zip lst [1..]
+
+-- p17  Split a list into two parts; the length of the first part is given.
+
+split :: [a] -> Int -> [[a]]
+split [] _         = [[]]
+split (x:xs) n = let
+  (first,second) = helper xs (n - 1) ([x],[])
+  in [first,second]
+    where
+      helper :: [a] -> Int -> ([a],[a]) -> ([a],[a])
+      helper lst 0 (f,_)     = (f,lst)
+      helper []  _ (f,_)     = (f,[])
+      helper (x:xs) n (y,ys) = helper xs (n - 1) (x:y,ys)
+
+split' :: [a] -> Int -> [[a]]
+split' lst n = let
+  first = take n lst
+  second = Prelude.drop n lst
+  in [first,second]
+
+-- p18 Extract a slice from a list.
+
+slice :: Int -> Int -> [a] -> [a]
+slice beginn end lst = Prelude.drop (beginn - 1) . take end $ lst
