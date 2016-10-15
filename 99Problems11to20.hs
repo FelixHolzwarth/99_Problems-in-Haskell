@@ -93,3 +93,22 @@ split' lst n = let
 
 slice :: Int -> Int -> [a] -> [a]
 slice beginn end lst = Prelude.drop (beginn - 1) . take end $ lst
+
+-- p19  Rotate a list N places to the left.
+
+rotate :: [a] -> Int -> [a]
+rotate lst n
+             | n >= 0    = rest ++ first
+             | otherwise = rest' ++ first'
+              where
+               (first,rest)   = splitAt n lst
+               (first',rest') = splitAt ((length lst) + n) lst
+
+-- p20 Remove the K'th element from a list.
+
+removeAt :: [a] -> Int -> [a]
+removeAt [] n  = []
+removeAt lst n = cut1 ++ cut2
+                where
+                  cut1 = take (n - 1) lst
+                  cut2 = Prelude.drop n lst
