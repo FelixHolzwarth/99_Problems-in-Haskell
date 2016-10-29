@@ -104,6 +104,12 @@ rotate lst n
                (first,rest)   = splitAt n lst
                (first',rest') = splitAt ((length lst) + n) lst
 
+rotate' :: [a] -> Int -> [a]
+rotate' lst n = (take m . drop i . cycle) lst
+ where
+   i = m + n
+   m = length lst
+
 -- p20 Remove the K'th element from a list.
 
 removeAt :: [a] -> Int -> [a]
